@@ -3,6 +3,7 @@ GPS经纬度坐标类，提供了`BD-09`，`GCJ-02`，`WGS-84`以及`MC`墨卡�
 
 ## 成员变量
 `double longitude; // 经度`
+
 `double latitude;  // 纬度`
 
 ## 初始化方法
