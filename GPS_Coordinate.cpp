@@ -80,21 +80,21 @@ double transformLat(GPS_Coordinate point)
 {
 	const auto lat = point.latitude - 35;
 	const auto lng = point.longitude - 105;
-	double ret = -100.0 + 2.0 * lat + 3.0 * lng + 0.2 * lng * lng + 0.1 * lat * lng + 0.2 * sqrt(fabs(lat));
-	ret += (20.0 * sin(6.0 * lat * pi) + 20.0 * sin(2.0 * lat * pi)) * 2.0 / 3.0;
-	ret += (20.0 * sin(lng * pi) + 40.0 * sin(lng / 3.0 * pi)) * 2.0 / 3.0;
-	ret += (160.0 * sin(lng / 12.0 * pi) + 320 * sin(lng * pi / 30.0)) * 2.0 / 3.0;
+	double ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lat * lng + 0.2 * sqrt(fabs(lng));
+	ret += (20.0 * sin(6.0 * lng * pi) + 20.0 * sin(2.0 * lng * pi)) * 2.0 / 3.0;
+	ret += (20.0 * sin(lat * pi) + 40.0 * sin(lat / 3.0 * pi)) * 2.0 / 3.0;
+	ret += (160.0 * sin(lat / 12.0 * pi) + 320 * sin(lat * pi / 30.0)) * 2.0 / 3.0;
 	return ret;
 }
 
 double transformLng(GPS_Coordinate point)
 {
-	const auto& lat = point.latitude;
-	const auto& lng = point.longitude;
-	double ret = 300.0 + lat + 2.0 * lng + 0.1 * lat * lat + 0.1 * lat * lng + 0.1 * sqrt(fabs(lat));
-	ret += (20.0 * sin(6.0 * lat * pi) + 20.0 * sin(2.0 * lat * pi)) * 2.0 / 3.0;
-	ret += (20.0 * sin(lat * pi) + 40.0 * sin(lat / 3.0 * pi)) * 2.0 / 3.0;
-	ret += (150.0 * sin(lat / 12.0 * pi) + 300.0 * sin(lat / 30.0 * pi)) * 2.0 / 3.0;
+	const auto& lat = point.latitude - 35;
+	const auto& lng = point.longitude - 105;
+	double ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * sqrt(fabs(lng));
+	ret += (20.0 * sin(6.0 * lng * pi) + 20.0 * sin(2.0 * lng * pi)) * 2.0 / 3.0;
+	ret += (20.0 * sin(lng * pi) + 40.0 * sin(lng / 3.0 * pi)) * 2.0 / 3.0;
+	ret += (150.0 * sin(lng / 12.0 * pi) + 300.0 * sin(lng / 30.0 * pi)) * 2.0 / 3.0;
 	return ret;
 }
 
@@ -177,15 +177,15 @@ GPS_Coordinate GPS_Coordinate::GCJ02toWGS84(GPS_Coordinate src)
 	{
 		return src;
 	}
-	auto lat = transformLat(src - GPS_Coordinate(105.0, 35.0));
-	auto lng = transformLng(src - GPS_Coordinate(105.0, 35.0));
+	auto lat = transformLat(src);
+	auto lng = transformLng(src);
 	auto radLat = deg2rad(src.latitude);
 	auto magic = sin(radLat);
 	magic = 1 - ee * magic * magic;
 	double sqrtmagic = sqrt(magic);
 	lat = (lat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * pi);
 	lng = (lng * 180.0) / (a / sqrtmagic * cos(radLat) * pi);
-	return src + GPS_Coordinate(lng, lat);
+	return GPS_Coordinate(src.longitude - lng, src.latitude - lat);
 }
 
 GPS_Coordinate GPS_Coordinate::BD09toWGS84(GPS_Coordinate src)
